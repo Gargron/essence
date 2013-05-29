@@ -275,6 +275,39 @@ HTML;
 	 *
 	 */
 
+	public function testMatchAllURLs( ) {
+
+		$Provider = new TestableProvider( );
+		$Provider->mediaProperties = array( 'html' => '<div></div>' );
+
+		$this->Collection->expects( $this->any( ))
+			->method( 'providers' )
+			->will( $this->returnValue( array( $Provider )));
+
+		$html = <<<HTML
+This is some exemplary text http://example.com
+We don't want <a href="http://foo.bar">to be matched</a> of course.
+http://line.start though
+HTML;
+
+		$expected = <<<HTML
+This is some exemplary text <div></div>
+We don't want <a href="http://foo.bar">to be matched</a> of course.
+<div></div> though
+HTML;
+
+		$this->assertEquals(
+			$expected,
+			$this->Essence->replace( $html )
+		);
+	}
+
+
+
+	/**
+	 *
+	 */
+
 	public function testErrors( ) {
 
 		$this->Essence->log( new Exception( 'one' ));
